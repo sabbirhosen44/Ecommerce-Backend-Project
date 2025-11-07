@@ -4,9 +4,8 @@ import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-config({
-  path: "./data/config.env",
-});
+// Load environment variables from .env in root
+config();
 
 export const app = express();
 
