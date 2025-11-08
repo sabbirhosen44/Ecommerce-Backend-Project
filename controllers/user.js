@@ -12,6 +12,7 @@ import cloudinary from "cloudinary";
 export const login = asyncError(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).select("+password");
+  console.log(email, password);
 
   if (!user) {
     return next(new ErrorHandler("Incorrect Email or Password", 400));
@@ -78,27 +79,46 @@ export const getMyProfile = asyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    user,
+    message: "Profile fetched successfully",
+    data: user,
   });
 });
 
 export const updateProfile = asyncError(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
-
   const { name, email, address, city, country, pinCode } = req.body;
 
-  if (name) user.name = name;
-  if (email) user.email = email;
-  if (address) user.address = address;
-  if (city) user.city = city;
-  if (country) user.country = country;
-  if (pinCode) user.pinCode = pinCode;
+  const updateData = {};
 
-  await user.save();
+  if (name) updateData.name = name.trim();
+  if (email) updateData.email = email.trim();
+  if (address) updateData.address = address.trim();
+  if (city) updateData.city = city.trim();
+  if (country) updateData.country = country.trim();
+  if (pinCode) updateData.pinCode = pinCode;
+
+  if (email && email !== req.user?.email) {
+    const existingUser = await User.findOne({
+      email,
+      _id: { $ne: req.user?._id },
+    });
+    if (existingUser) {
+      return next(new ErrorHandler("Email is already taken!", 400));
+    }
+  }
+
+  const user = await User.findByIdAndUpdate(req.user?._id, updateData, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
 
   res.status(200).json({
     success: true,
     message: "Profile Updated Successfully",
+    data: user,
   });
 });
 
@@ -127,12 +147,18 @@ export const changePassword = asyncError(async (req, res, next) => {
 
 export const updatePic = asyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  if (!req.file) return next(new ErrorHandler("Please upload a file", 400));
 
   const file = getDataUri(req.file);
 
-  await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+  if (user.avatar && user.avatar.public_id) {
+    await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+  }
 
   const myCloud = await cloudinary.v2.uploader.upload(file.content);
+
   user.avatar = {
     public_id: myCloud.public_id,
     url: myCloud.secure_url,
@@ -143,6 +169,9 @@ export const updatePic = asyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Avatar Updated Successfully",
+    data: {
+      avatar: user.avatar,
+    },
   });
 });
 
@@ -151,8 +180,6 @@ export const forgetpassword = asyncError(async (req, res, next) => {
   const user = await User.findOne({ email });
 
   if (!user) return next(new ErrorHandler("Incorrect Email", 404));
-  // max,min 2000,10000
-  // math.random()*(max-min)+min
 
   const randomNumber = Math.random() * (999999 - 100000) + 100000;
   const otp = Math.floor(randomNumber);
