@@ -30,6 +30,9 @@ export const createOrder = asyncError(async (req, res, next) => {
     totalAmount,
   } = req.body;
 
+  if (!orderItems || orderItems.length === 0)
+    return next(new ErrorHandler("No order items found", 400));
+
   await Order.create({
     user: req.user._id,
     shippingInfo,
@@ -40,6 +43,7 @@ export const createOrder = asyncError(async (req, res, next) => {
     taxPrice,
     shippingCharges,
     totalAmount,
+    paidAt: paymentMethod === "ONLINE" ? new Date(Date.now()) : null,
   });
 
   for (let i = 0; i < orderItems.length; i++) {

@@ -58,7 +58,10 @@ const schema = new mongoose.Schema({
     default: "COD",
   },
 
-  paidAt: Date,
+  paidAt: {
+    type: Date,
+    default: null,
+  },
   paymentInfo: {
     id: String,
     status: String,
@@ -86,7 +89,10 @@ const schema = new mongoose.Schema({
     enum: ["Preparing", "Shipped", "Delivered"],
     default: "Preparing",
   },
-  deliveredAt: Date,
+  deliveredAt: {
+    type: Date,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
