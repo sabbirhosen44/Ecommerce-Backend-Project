@@ -1,5 +1,6 @@
 import { asyncError } from "../middlewares/error.js";
 import { User } from "../models/user.js";
+import { resetPasswordTemplate } from "../utils/emails/resetPasswordTemplate.js";
 import ErrorHandler from "../utils/error.js";
 import {
   cookieOptions,
@@ -189,9 +190,9 @@ export const forgetpassword = asyncError(async (req, res, next) => {
   user.otp_expire = new Date(Date.now() + otp_expire);
   await user.save();
 
-  const message = `Your OTP for Reseting Password is ${otp}.\n Please ignore if you haven't requested this.`;
+  const htmlEmail = resetPasswordTemplate(user.name, otp);
   try {
-    await sendEmail("OTP For Reseting Password", user.email, message);
+    await sendEmail("OTP For Reseting Password", user.email, htmlEmail);
   } catch (error) {
     user.otp = null;
     user.otp_expire = null;

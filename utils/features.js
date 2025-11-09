@@ -29,7 +29,7 @@ export const cookieOptions = {
   sameSite: process.env.NODE_ENV === "Development" ? false : "none",
 };
 
-export const sendEmail = async (subject, to, text) => {
+export const sendEmail = async (subject, to, message) => {
   const transporter = createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
@@ -40,8 +40,9 @@ export const sendEmail = async (subject, to, text) => {
   });
 
   await transporter.sendMail({
+    from: `Ecommerce Team <${process.env.SMTP_USER}>`,
     to,
     subject,
-    text,
+    html: message,
   });
 };
