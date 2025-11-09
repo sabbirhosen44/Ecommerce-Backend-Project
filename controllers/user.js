@@ -59,6 +59,11 @@ export const signup = asyncError(async (req, res, next) => {
     pinCode,
   });
 
+  if (user.email === process.env.ADMIN_EMAIL) {
+    user.role = "admin";
+    await user.save();
+  }
+
   sendToken(user, res, `Registered Successfully`, 201);
 });
 
