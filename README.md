@@ -19,18 +19,6 @@ A RESTful API for an e-commerce platform built with Node.js, Express, and MongoD
 - 📧 **Email Service** - OTP verification via Nodemailer
 - 🛡️ **Security** - Password hashing, secure cookies, CORS
 
-<!-- ## 🛠️ Tech Stack
-
-**Backend Framework:** Express.js
-**Database:** MongoDB with Mongoose ODM
-**Authentication:** JWT (JSON Web Tokens)
-**Payment:** Stripe API
-**Cloud Storage:** Cloudinary
-**Email:** Nodemailer
-**Security:** bcrypt, cookie-parser, CORS
-**File Upload:** Multer with DataURI
-**Validation:** Validator.js -->
-
 ## 🛠️ Tech Stack
 
 <table align="center" border="1" cellpadding="10" cellspacing="0">
@@ -119,9 +107,12 @@ A RESTful API for an e-commerce platform built with Node.js, Express, and MongoD
 │   └── error.js         # Custom error class
 ├── data/
 │   ├── database.js      # MongoDB connection
+├── postman/             # API testing
+│   ├── Ecommerce-Backend.postman_collection.json
+│   └── POSTMAN-SETUP.md        # Postman setup guide
 ├── .env                 # Environment variables
 ├── app.js               # Express configuration
-├── server.js            # Entry point
+└── README.md            # Project documentation
 └── package.json         # Dependencies
 ```
 
@@ -183,6 +174,18 @@ npm run dev
 ```
 
 Server runs on `http://localhost:4000`
+
+## 📮 API Testing with Postman
+
+We provide a complete Postman collection for easy API testing and integration.
+
+### Quick Setup
+
+- Import the collection into Postman from postman/Ecommerce-Backend.postman_collection.json
+- Set up environment variables (BASE_URL, ACCESS_TOKEN)
+- Start testing all endpoints!
+
+👉 View Complete Postman Setup Guide [POSTMAN-SETUP.md](postman/POSTMAN-SETUP.md)
 
 ## 📚 API Endpoints
 
